@@ -1,0 +1,21 @@
+#!/bin/bash
+OPTIND=1
+app_name=""
+arguements=""
+while getopts ":c:a:" opt; do
+    case $opt in
+    c)
+	#echo "Param: $OPTARG" >&2
+	app_name=$OPTARG
+	;;
+    a)
+	if [ "$arguements" = "" ]; then
+		arguements=("\"$OPTARG\"")
+	else 
+		arguements+=(",\"$OPTARG\"")
+	fi
+	;;
+    esac
+done
+echo $app_name " " ${arguements[@]}
+curl -H "Content-Type: application/json" -X POST -d '{"Name":"'$app_name'","Id":"1","Status":"Not Running","Started":"2016-10-15 04:06:30","LastUpdate":"2016-10-15 04:06:30","Arguements":['$arguements']}' http://localhost:24226/api/launcher

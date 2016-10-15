@@ -12,8 +12,21 @@ namespace Rockhopper.Models
         private static ConcurrentDictionary<string, AppModel> _apps = new ConcurrentDictionary<string, AppModel>();
         public void Add(AppModel app)
         {
-            var a = Process.Start("cmd", "/k " + app.Name + " " + string.Join(" ", app.Arguements));
-            app.Id = a.Id.ToString();
+            var proc = new Process
+            {
+                StartInfo = new ProcessStartInfo
+                {
+                    FileName = "cmd",
+                    Arguments = "/k " + app.Name + " " + string.Join(" ", app.Arguements),
+                    UseShellExecute = false,
+                    RedirectStandardOutput = true,
+                    CreateNoWindow = true
+                }
+            };
+            var a = proc.Start();
+            app.Started = DateTime.Now;
+            app.LastUpdate = DateTime.Now;
+            app.Id = proc.Id.ToString();
             _apps[app.Id] = app;
         }
 
